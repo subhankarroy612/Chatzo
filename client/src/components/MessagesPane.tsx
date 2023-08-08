@@ -29,7 +29,6 @@ export default function MessagesPane({ chat }: MessagesPaneProps) {
       }}
     >
       <MessagesPaneHeader sender={chat.sender} />
-
       <Box
         sx={{
           display: "flex",
