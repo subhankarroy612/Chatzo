@@ -6,7 +6,7 @@ export const signup = async (req: Request, res: Response) => {
     const newUser = await UserService.signup(req.body);
     return res.send(newUser);
   } catch (err: any) {
-    return res.status(400).send(err.message);
+    return res.status(400).send({ message: err.message });
   }
 };
 
@@ -15,6 +15,6 @@ export const login = async (req: Request, res: Response) => {
     const token = await UserService.login(req.body);
     return res.send({ token });
   } catch (err: any) {
-    return res.status(400).send(err.message);
+    return res.status(400).send({ message: err.message });
   }
 };

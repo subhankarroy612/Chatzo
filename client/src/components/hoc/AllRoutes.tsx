@@ -4,6 +4,7 @@ import Signup from "../../Signup";
 import Login from "../../Login";
 import Message from "../../Message";
 import React from "react";
+import { AuthProvider } from "../../context/AuthContext";
 
 const Router = () => {
   return (
@@ -11,13 +12,20 @@ const Router = () => {
       <Route
         path="/"
         element={
-          <ProtectedRoute>
+          <AuthProvider>
             <Message />
-          </ProtectedRoute>
+          </AuthProvider>
         }
       />
       <Route path="/signup" element={<Signup />}></Route>
-      <Route path="/login" element={<Login />}></Route>
+      <Route
+        path="/login"
+        element={
+          <AuthProvider>
+            <Login />
+          </AuthProvider>
+        }
+      ></Route>
     </Routes>
   );
 };
