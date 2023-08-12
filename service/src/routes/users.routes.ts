@@ -1,17 +1,9 @@
 import express from "express";
-import { UsersModel } from "../models/users.model";
+import * as UserController from "../modules/users/users.controller";
 
 const app = express();
 
-app.post("/signup", async (req, res) => {
-  try {
-    const { email } = req.body;
-    const user = new UsersModel({ email });
-    await user.save();
-    return res.send(user);
-  } catch (err) {
-    console.log(err);
-  }
-});
+app.post("/signup", UserController.signup);
+app.post("/signin", UserController.login);
 
 export default app;
