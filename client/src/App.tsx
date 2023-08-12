@@ -24,7 +24,7 @@ export default function JoyMessagesTemplate() {
       <CssBaseline />
       <Box sx={{ display: "flex", minHeight: "100dvh" }}>
         <Header />
-        <Sidebar />
+        {/* <Sidebar /> */}
         <Box component="main" className="MainContent" flex={1}>
           <MyMessages />
         </Box>

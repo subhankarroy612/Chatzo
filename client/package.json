@@ -10,6 +10,7 @@
     "babel-preset-es2015": "^6.24.1",
     "react": "latest",
     "react-dom": "latest",
+    "react-router-dom": "^6.15.0",
     "typescript": "latest"
   },
   "description": "https://github.com/mui/material-ui/blob/v5.14.3/docs/data/joy/templates/messages/App.tsx",
