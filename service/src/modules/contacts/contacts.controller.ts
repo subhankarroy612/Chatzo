@@ -8,6 +8,10 @@ export const getContacts = async (req: Request, res: Response) => {
 };
 
 export const addContact = async (req: Request, res: Response) => {
-  const contact = await ContactService.addContact(req.body);
-  return res.send({ data: contact });
+  try {
+    const contact = await ContactService.addContact(req.body);
+    return res.send({ status: true, data: contact });
+  } catch (err: any) {
+    return res.send({ message: err.message });
+  }
 };

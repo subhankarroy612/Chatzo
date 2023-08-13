@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { ContactModel } from "../../models/contacts.model";
+import { UsersModel } from "../../models/users.model";
 
 export const getContacts = async (ownerId: string) => {
   const contacts = await ContactModel.aggregate([
@@ -27,11 +28,21 @@ export const getContacts = async (ownerId: string) => {
 
 export const addContact = async ({
   owner,
-  contactId,
+  username,
 }: {
   owner: string;
-  contactId: string;
+  username: string;
 }) => {
+  const searchContact: { _id: string } | null = await UsersModel.findOne({
+    username,
+  });
+
+  if (!searchContact || searchContact._id == owner) {
+    throw new Error(`User with username ${username} not found`);
+  }
+
+  const contactId: string = searchContact._id;
+
   const updateContact = await ContactModel.findOneAndUpdate(
     { owner },
     { $push: { contacts: { contactId } } },
