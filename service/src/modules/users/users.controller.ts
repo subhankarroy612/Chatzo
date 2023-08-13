@@ -3,8 +3,8 @@ import * as UserService from "./users.service";
 
 export const signup = async (req: Request, res: Response) => {
   try {
-    const newUser = await UserService.signup(req.body);
-    return res.send(newUser);
+    await UserService.signup(req.body);
+    return res.send({ status: true });
   } catch (err: any) {
     return res.status(400).send({ message: err.message });
   }

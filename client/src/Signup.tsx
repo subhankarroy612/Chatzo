@@ -47,13 +47,36 @@ export default function Signup() {
     }
   }, [isAuthenticated]);
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     console.log({
       email: data.get("email"),
       password: data.get("password"),
     });
+    try {
+      let res: any = await fetch("http://localhost:8080/api/user/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: data.get("email"),
+          password: data.get("password"),
+          phone: data.get("phone"),
+          username: data.get("username"),
+        }),
+      });
+      res = await res.json();
+      if (res.status) {
+        alert("Signup successful");
+        navigate("/login");
+      } else {
+        alert(res.message);
+      }
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (

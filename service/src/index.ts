@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import userRoutes from "./routes/users.routes";
+import messageRoutes from "./routes/messages.routes";
 dotenv.config();
 
 const app = express();
@@ -12,6 +13,7 @@ app.use(express.json());
 app.get("/", (req: Request, res: Response) => res.send("Server is running"));
 
 app.use("/api/user", userRoutes);
+app.use("/api/message", messageRoutes);
 
 mongoose.connect(process.env.URL!).then(() =>
   app.listen(process.env.PORT, () => {

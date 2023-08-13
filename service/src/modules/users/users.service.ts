@@ -18,6 +18,11 @@ export const signup = async (body: {
     throw new Error("Username is already in use");
   }
 
+  const checkEmail = await UsersModel.findOne({ email });
+  if (checkEmail) {
+    throw new Error("Email is already in use");
+  }
+
   const user = (
     await UsersModel.create({ email, username, phone, password })
   ).save();
