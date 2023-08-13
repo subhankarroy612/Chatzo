@@ -9,6 +9,7 @@ import CircleIcon from "@mui/icons-material/Circle";
 import { UserProps } from "../types";
 import { toggleMessagesPane } from "../utils";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import { useNavigate } from "react-router-dom";
 
 type MessagesPaneHeaderProps = {
   sender: UserProps;
@@ -17,6 +18,13 @@ type MessagesPaneHeaderProps = {
 export default function MessagesPaneHeader({
   sender,
 }: MessagesPaneHeaderProps) {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("chatzo");
+    navigate("/login");
+  };
+
   return (
     <Stack
       direction="row"
@@ -63,9 +71,7 @@ export default function MessagesPaneHeader({
                 >
                   Online
                 </Chip>
-              ) : (
-                undefined
-              )
+              ) : undefined
             }
           >
             {sender.name}
@@ -82,7 +88,9 @@ export default function MessagesPaneHeader({
         >
           View profile
         </Button>
-
+        <Button onClick={handleLogout} variant="outlined">
+          Logout
+        </Button>
         <IconButton variant="plain" color="neutral">
           <i data-feather="more-vertical" />
         </IconButton>

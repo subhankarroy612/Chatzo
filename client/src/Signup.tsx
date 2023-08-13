@@ -37,6 +37,16 @@ const defaultTheme = createTheme();
 
 export default function Signup() {
   const navigate = useNavigate();
+  const [isAuthenticated, setAuthenticated] = React.useState(
+    !!localStorage.getItem("chatzo")
+  );
+
+  React.useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/");
+    }
+  }, [isAuthenticated]);
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);

@@ -3,12 +3,22 @@ import { CssVarsProvider } from "@mui/joy/styles";
 import GlobalStyles from "@mui/joy/GlobalStyles";
 import CssBaseline from "@mui/joy/CssBaseline";
 import Box from "@mui/joy/Box";
-import Sidebar from "./components/Sidebar";
 import Header from "./components/Header";
 import MyMessages from "./components/MyMessages";
-import { AuthContext } from "./context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export default function Message() {
+  const navigate = useNavigate();
+  const [isAuthenticated, setAuthenticated] = React.useState(
+    !!localStorage.getItem("chatzo")
+  );
+
+  React.useEffect(() => {
+    if (!isAuthenticated) {
+      navigate("/login");
+    }
+  }, [isAuthenticated]);
+
   return (
     <CssVarsProvider disableTransitionOnChange>
       <GlobalStyles

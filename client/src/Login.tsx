@@ -13,7 +13,6 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
-import { AuthContext, AuthContextType } from "./context/AuthContext";
 
 function Copyright(props: any) {
   return (
@@ -38,7 +37,15 @@ const defaultTheme = createTheme();
 
 export default function login() {
   const navigate = useNavigate();
-  const authContext = React.useContext(AuthContext);
+  const [isAuthenticated, setAuthenticated] = React.useState(
+    !!localStorage.getItem("chatzo")
+  );
+
+  React.useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/");
+    }
+  }, [isAuthenticated]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -56,12 +63,8 @@ export default function login() {
       });
       res = await res.json();
       if (res.token) {
-        if (authContext) {
-          authContext.setToken(res.token);
-          authContext.setAuthenticated(true);
-          localStorage.setItem("chatzo", res.token);
-          navigate("/");
-        }
+        localStorage.setItem("chatzo", res.token);
+        navigate("/");
       } else {
         alert(res.message);
       }
