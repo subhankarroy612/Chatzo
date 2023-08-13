@@ -7,6 +7,7 @@ import List from "@mui/joy/List";
 import ChatListItem from "./ChatListItem";
 import { ChatProps } from "../types";
 import SearchIcon from "@mui/icons-material/Search";
+import jwtDecode from "jwt-decode";
 
 type ChatsPaneProps = {
   chats: ChatProps[];
@@ -19,6 +20,43 @@ export default function ChatsPane({
   setSelectedChat,
   selectedChatId,
 }: ChatsPaneProps) {
+  const [text, setText] = React.useState("");
+  const [token, setToken] = React.useState(localStorage.getItem("chatzo"));
+  const [userDetails, setUserDetails] = React.useState<any>({});
+
+  React.useEffect(() => {
+    if (token) {
+      const details = jwtDecode(token);
+      setUserDetails(details);
+    }
+  }, [token]);
+
+  const addContact = async (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      try {
+        let res: any = await fetch("http://localhost:8080/api/contact/add", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            owner: userDetails.id,
+            username: text,
+          }),
+        });
+        res = await res.json();
+        setText("");
+        if (res.status) {
+          alert("Contact added successfully");
+        } else {
+          alert(res.message);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  };
+
   return (
     <Sheet
       sx={{
@@ -51,9 +89,12 @@ export default function ChatsPane({
 
       <Box px={2} pb={1.5}>
         <Input
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          onKeyDown={addContact}
           size="sm"
           startDecorator={<SearchIcon />}
-          placeholder="Search"
+          placeholder="Username"
           aria-label="Search"
         />
       </Box>

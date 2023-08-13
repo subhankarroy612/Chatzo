@@ -1,7 +1,12 @@
+import { ObjectId } from "mongoose";
 import { UsersModel } from "../../models/users.model";
 import jwt from "jsonwebtoken";
 
-const generateToken = (body: { email: string; username: string }) => {
+const generateToken = (body: {
+  email: string;
+  username: string;
+  id: string;
+}) => {
   return jwt.sign(body, process.env.JWT_SECRET as string);
 };
 
@@ -38,6 +43,10 @@ export const login = async (body: { email: string; password: string }) => {
     throw new Error("Invalid email or password");
   }
 
-  const token = generateToken({ email: user.email, username: user.username });
+  const token = generateToken({
+    email: user.email,
+    username: user.username,
+    id: user._id.toString(),
+  });
   return token;
 };
