@@ -15,9 +15,7 @@ type MessagesPaneHeaderProps = {
   sender: UserProps;
 };
 
-export default function MessagesPaneHeader({
-  sender,
-}: MessagesPaneHeaderProps) {
+export default function MessagesPaneHeader({ sender }: any) {
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -71,13 +69,15 @@ export default function MessagesPaneHeader({
                 >
                   Online
                 </Chip>
-              ) : undefined
+              ) : (
+                undefined
+              )
             }
           >
-            {sender.name}
+            {sender.username}
           </Typography>
 
-          <Typography level="body-sm">{sender.username}</Typography>
+          <Typography level="body-sm">{sender.email}</Typography>
         </div>
       </Stack>
       <Stack spacing={1} direction="row" alignItems="center">

@@ -1,6 +1,6 @@
-import * as React from 'react';
-import Badge from '@mui/joy/Badge';
-import Avatar, { AvatarProps } from '@mui/joy/Avatar';
+import * as React from "react";
+import Badge from "@mui/joy/Badge";
+import Avatar, { AvatarProps } from "@mui/joy/Avatar";
 
 type AvatarWithStatusProps = AvatarProps & {
   online?: boolean;
@@ -13,8 +13,8 @@ export default function AvatarWithStatus({
   return (
     <div>
       <Badge
-        color={online ? 'success' : 'neutral'}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        color={online ? "success" : "neutral"}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
         badgeInset="6px 6px"
       >
         <Avatar {...rest} />

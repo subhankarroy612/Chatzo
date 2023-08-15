@@ -7,18 +7,67 @@ import ChatBubble from "./ChatBubble";
 import MessageInput from "./MessageInput";
 import MessagesPaneHeader from "./MessagesPaneHeader";
 import { ChatProps, MessageProps } from "../types";
+import jwtDecode from "jwt-decode";
 
-type MessagesPaneProps = {
-  chat: ChatProps;
-};
-
-export default function MessagesPane({ chat }: MessagesPaneProps) {
+export default function MessagesPane({ chat }: any) {
   const [chatMessages, setChatMessages] = React.useState(chat.messages);
   const [textAreaValue, setTextAreaValue] = React.useState("");
+  const [token, setToken] = React.useState(localStorage.getItem("chatzo"));
+  const [userDetails, setUserDetails] = React.useState<any>({});
+  const [messages, setMessages] = React.useState<any>([]);
 
   React.useEffect(() => {
-    setChatMessages(chat.messages);
-  }, [chat.messages]);
+    if (token) {
+      const details: any = jwtDecode(token);
+      setUserDetails(details);
+    }
+  }, [token]);
+
+  React.useEffect(() => {
+    getMessages();
+  }, [chat]);
+
+  const getMessages = async () => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/message/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          sender: userDetails.id,
+          receiver: chat.sender._id,
+        }),
+      });
+      const res = await response.json();
+      setMessages(res);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const sendMessage = async () => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/message/send`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          sender: userDetails.id,
+          receiver: chat.sender._id,
+          content: textAreaValue,
+        }),
+      });
+      const res = await response.json();
+      if (res) {
+        setMessages([...messages, res]);
+      }
+      setTextAreaValue("");
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <Sheet
@@ -41,47 +90,38 @@ export default function MessagesPane({ chat }: MessagesPaneProps) {
         }}
       >
         <Stack spacing={2} justifyContent="flex-end">
-          {chatMessages.map((message: MessageProps, index: number) => {
-            const isYou = message.sender === "You";
-            return (
-              <Stack
-                key={index}
-                direction="row"
-                spacing={2}
-                flexDirection={isYou ? "row-reverse" : "row"}
-              >
-                {message.sender !== "You" && (
-                  <AvatarWithStatus
-                    online={message.sender.online}
-                    src={message.sender.avatar}
+          {messages &&
+            messages.map((message: any, index: number) => {
+              const isYou = message.sender === userDetails.id;
+              return (
+                <Stack
+                  key={index}
+                  direction="row"
+                  spacing={2}
+                  flexDirection={isYou ? "row-reverse" : "row"}
+                >
+                  {message.sender !== userDetails.id && (
+                    <AvatarWithStatus
+                      online={message.sender.online}
+                      src={message.sender.avatar}
+                    />
+                  )}
+                  <ChatBubble
+                    variant={isYou ? "sent" : "received"}
+                    userDetails={userDetails}
+                    chat={chat}
+                    {...message}
                   />
-                )}
-                <ChatBubble
-                  variant={isYou ? "sent" : "received"}
-                  {...message}
-                />
-              </Stack>
-            );
-          })}
+                </Stack>
+              );
+            })}
         </Stack>
       </Box>
 
       <MessageInput
         textAreaValue={textAreaValue}
         setTextAreaValue={setTextAreaValue}
-        onSubmit={() => {
-          const newId = chatMessages.length + 1;
-          const newIdString = newId.toString();
-          setChatMessages([
-            ...chatMessages,
-            {
-              id: newIdString,
-              sender: "You",
-              content: textAreaValue,
-              timestamp: "Just now",
-            },
-          ]);
-        }}
+        onSubmit={sendMessage}
       />
     </Sheet>
   );

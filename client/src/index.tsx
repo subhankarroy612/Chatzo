@@ -5,11 +5,9 @@ import Router from "./components/hoc/AllRoutes";
 import { BrowserRouter } from "react-router-dom";
 
 ReactDOM.createRoot(document.querySelector("#root")!).render(
-  <React.StrictMode>
-    <StyledEngineProvider injectFirst>
-      <BrowserRouter>
-        <Router />
-      </BrowserRouter>
-    </StyledEngineProvider>
-  </React.StrictMode>
+  <StyledEngineProvider injectFirst>
+    <BrowserRouter>
+      <Router />
+    </BrowserRouter>
+  </StyledEngineProvider>
 );

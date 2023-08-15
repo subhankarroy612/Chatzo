@@ -2,34 +2,45 @@ import * as React from "react";
 import Stack from "@mui/joy/Stack";
 import Sheet from "@mui/joy/Sheet";
 import Typography from "@mui/joy/Typography";
-import { Box, Chip, IconButton, Input } from "@mui/joy";
+import { Box, Chip, Input } from "@mui/joy";
 import List from "@mui/joy/List";
 import ChatListItem from "./ChatListItem";
-import { ChatProps } from "../types";
 import SearchIcon from "@mui/icons-material/Search";
 import jwtDecode from "jwt-decode";
 
-type ChatsPaneProps = {
-  chats: ChatProps[];
-  setSelectedChat: (chat: ChatProps) => void;
-  selectedChatId: string;
-};
-
-export default function ChatsPane({
-  chats,
-  setSelectedChat,
-  selectedChatId,
-}: ChatsPaneProps) {
+export default function ChatsPane({ setSelectedChat, selectedChatId }: any) {
   const [text, setText] = React.useState("");
   const [token, setToken] = React.useState(localStorage.getItem("chatzo"));
   const [userDetails, setUserDetails] = React.useState<any>({});
+  const [contacts, setContacts] = React.useState([]);
 
   React.useEffect(() => {
     if (token) {
-      const details = jwtDecode(token);
+      const details: any = jwtDecode(token);
       setUserDetails(details);
+      getContacts(details.id);
     }
   }, [token]);
+
+  const getContacts = async (id: string) => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/contact/${id}`);
+      const {
+        data: { contactDetails },
+      } = await response.json();
+      setContacts(contactDetails);
+      setSelectedChat({
+        _id: contactDetails[0]._id,
+        sender: {
+          _id: contactDetails[0]._id,
+          username: contactDetails[0].username,
+          email: contactDetails[0].email,
+        },
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const addContact = async (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
@@ -105,14 +116,15 @@ export default function ChatsPane({
           "--ListItem-paddingX": "1rem",
         }}
       >
-        {chats.map((chat) => (
-          <ChatListItem
-            key={chat.id}
-            {...chat}
-            setSelectedChat={setSelectedChat}
-            selectedChatId={selectedChatId}
-          />
-        ))}
+        {contacts &&
+          contacts.map((contact: any) => (
+            <ChatListItem
+              key={contact._id}
+              {...contact}
+              setSelectedChat={setSelectedChat}
+              selectedChatId={selectedChatId}
+            />
+          ))}
       </List>
     </Sheet>
   );

@@ -3,7 +3,7 @@ import { ContactModel } from "../../models/contacts.model";
 import { UsersModel } from "../../models/users.model";
 
 export const getContacts = async (ownerId: string) => {
-  const contacts = await ContactModel.aggregate([
+  const [contacts] = await ContactModel.aggregate([
     {
       $match: { owner: new mongoose.Types.ObjectId(ownerId) },
     },
