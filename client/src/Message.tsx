@@ -6,12 +6,26 @@ import Box from "@mui/joy/Box";
 import Header from "./components/Header";
 import MyMessages from "./components/MyMessages";
 import { useNavigate } from "react-router-dom";
+import { io } from "socket.io-client";
+import jwtDecode from "jwt-decode";
+
+const socket = io("http://localhost:8080");
 
 export default function Message() {
   const navigate = useNavigate();
   const [isAuthenticated, setAuthenticated] = React.useState(
     !!localStorage.getItem("chatzo")
   );
+  const [token, setToken] = React.useState(localStorage.getItem("chatzo"));
+  const [userDetails, setUserDetails] = React.useState<any>({});
+
+  React.useEffect(() => {
+    if (token) {
+      const details: any = jwtDecode(token);
+      setUserDetails(details);
+      socket.emit("user_connected", { ...details });
+    }
+  }, [token]);
 
   React.useEffect(() => {
     if (!isAuthenticated) {
