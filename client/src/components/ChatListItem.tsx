@@ -8,6 +8,7 @@ import Typography from "@mui/joy/Typography";
 import CircleIcon from "@mui/icons-material/Circle";
 import AvatarWithStatus from "./AvatarWithStatus";
 import { toggleMessagesPane } from "../utils";
+import { socket } from "../Message";
 
 export default function ChatListItem({
   _id,
@@ -24,6 +25,7 @@ export default function ChatListItem({
         <ListItemButton
           onClick={() => {
             toggleMessagesPane();
+            socket.emit("join_room", _id);
             setSelectedChat({
               _id,
               sender: { _id, username, email },

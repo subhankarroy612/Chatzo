@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
 import jwtDecode from "jwt-decode";
 
-const socket = io("http://localhost:8080");
+export const socket = io("http://localhost:8080");
 
 export default function Message() {
   const navigate = useNavigate();
@@ -18,13 +18,19 @@ export default function Message() {
   );
   const [token, setToken] = React.useState(localStorage.getItem("chatzo"));
   const [userDetails, setUserDetails] = React.useState<any>({});
+  const userDetailsRef = React.useRef<any>(null);
 
   React.useEffect(() => {
     if (token) {
       const details: any = jwtDecode(token);
       setUserDetails(details);
+      userDetailsRef.current = details;
       socket.emit("user_connected", { ...details });
     }
+
+    return () => {
+      socket.emit("user_disconnected", userDetailsRef.current);
+    };
   }, [token]);
 
   React.useEffect(() => {

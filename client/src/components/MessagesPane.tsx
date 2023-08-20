@@ -8,6 +8,7 @@ import MessageInput from "./MessageInput";
 import MessagesPaneHeader from "./MessagesPaneHeader";
 import { ChatProps, MessageProps } from "../types";
 import jwtDecode from "jwt-decode";
+import { socket } from "../Message";
 
 export default function MessagesPane({ chat }: any) {
   const [chatMessages, setChatMessages] = React.useState(chat.messages);
@@ -26,6 +27,16 @@ export default function MessagesPane({ chat }: any) {
   React.useEffect(() => {
     getMessages();
   }, [chat]);
+
+  React.useEffect(() => {
+    socket.on("new_message", (newMessage) => {
+      console.log(newMessage);
+    });
+
+    return () => {
+      socket.off("new_message");
+    };
+  }, []);
 
   const getMessages = async () => {
     try {
@@ -62,6 +73,7 @@ export default function MessagesPane({ chat }: any) {
       const res = await response.json();
       if (res) {
         setMessages([...messages, res]);
+        socket.emit("new_message", res);
       }
       setTextAreaValue("");
     } catch (err) {

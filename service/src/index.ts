@@ -3,7 +3,7 @@ import { createServer } from "http";
 import { Server } from "socket.io";
 import cors from "cors";
 import dotenv from "dotenv";
-import mongoose from "mongoose";
+import mongoose, { set } from "mongoose";
 import userRoutes from "./routes/users.routes";
 import messageRoutes from "./routes/messages.routes";
 import contactRoutes from "./routes/contact.routes";
@@ -17,16 +17,37 @@ const io = new Server(httpServer, {
   },
 });
 
+const onlineUsers = new Set();
+
 io.on("connection", (socket) => {
   socket.on("user_connected", (user) => {
-    console.log(user);
+    onlineUsers.add(user.username);
+    console.log(onlineUsers);
+  });
+
+  socket.on("join_room", (room) => {
+    socket.join(room);
+  });
+
+  socket.on("new_message", ({ sender, content }) => {
+    io.to(sender).emit("new_message", content);
+  });
+
+  socket.on("user_disconnected", (user) => {
+    onlineUsers.delete(user.username);
+    console.log(onlineUsers);
   });
 });
 
 app.use(cors());
 app.use(express.json());
 
-app.get("/", (req: Request, res: Response) => res.send("Server is running"));
+app.get("/", (req: Request, res: Response) =>
+  res.send({
+    message: "Server is running",
+    onlineUsers: Array.from(onlineUsers),
+  })
+);
 
 app.use("/api/user", userRoutes);
 app.use("/api/message", messageRoutes);
