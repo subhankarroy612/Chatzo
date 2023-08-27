@@ -16,6 +16,7 @@ export default function MessagesPane({ chat }: any) {
   const [token, setToken] = React.useState(localStorage.getItem("chatzo"));
   const [userDetails, setUserDetails] = React.useState<any>({});
   const [messages, setMessages] = React.useState<any>([]);
+  const [currentChannelId, setCurrentChannelId] = React.useState("");
 
   React.useEffect(() => {
     if (token) {
@@ -26,17 +27,24 @@ export default function MessagesPane({ chat }: any) {
 
   React.useEffect(() => {
     getMessages();
+    if (chat) {
+      setCurrentChannelId(chat.channelId);
+    }
   }, [chat]);
 
   React.useEffect(() => {
-    socket.on("new_message", (newMessage) => {
-      console.log(newMessage);
+    socket.on("new_message", ({ body, channelId }) => {
+      if (token) {
+        if (currentChannelId === channelId) {
+          setMessages((prev: any) => [...prev, body]);
+        }
+      }
     });
 
     return () => {
       socket.off("new_message");
     };
-  }, []);
+  }, [currentChannelId]);
 
   const getMessages = async () => {
     try {
@@ -72,7 +80,6 @@ export default function MessagesPane({ chat }: any) {
       });
       const res = await response.json();
       if (res) {
-        setMessages([...messages, res]);
         socket.emit("new_message", res);
       }
       setTextAreaValue("");

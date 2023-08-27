@@ -16,6 +16,7 @@ export default function ChatListItem({
   email,
   selectedChatId,
   setSelectedChat,
+  channelId,
 }: any) {
   const selected = selectedChatId === _id;
 
@@ -25,10 +26,11 @@ export default function ChatListItem({
         <ListItemButton
           onClick={() => {
             toggleMessagesPane();
-            socket.emit("join_room", _id);
+            socket.emit("join_room", channelId);
             setSelectedChat({
               _id,
               sender: { _id, username, email },
+              channelId,
             });
           }}
           selected={selected}

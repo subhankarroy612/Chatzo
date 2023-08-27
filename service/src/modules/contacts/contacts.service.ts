@@ -18,7 +18,30 @@ export const getContacts = async (ownerId: string) => {
     {
       $project: {
         owner: 1,
-        contactDetails: 1,
+        contactDetails: {
+          $map: {
+            input: "$contactDetails",
+            as: "contactDetail",
+            in: {
+              _id: "$$contactDetail._id",
+              email: "$$contactDetail.email",
+              password: "$$contactDetail.password",
+              phone: "$$contactDetail.phone",
+              username: "$$contactDetail.username",
+              channelId: {
+                $arrayElemAt: [
+                  "$contacts.channelId",
+                  {
+                    $indexOfArray: [
+                      "$contacts.contactId",
+                      "$$contactDetail._id",
+                    ],
+                  },
+                ],
+              },
+            },
+          },
+        },
       },
     },
   ]);
@@ -42,16 +65,17 @@ export const addContact = async ({
   }
 
   const contactId: string = searchContact._id;
+  const channelId: string = [searchContact._id, owner].sort().join();
 
   const updateContact = await ContactModel.findOneAndUpdate(
     { owner },
-    { $push: { contacts: { contactId } } },
+    { $push: { contacts: { contactId, channelId } } },
     { upsert: true, new: true }
   );
 
   await ContactModel.findOneAndUpdate(
     { owner: contactId },
-    { $push: { contacts: { contactId: owner } } },
+    { $push: { contacts: { contactId: owner, channelId } } },
     { upsert: true, new: true }
   );
 

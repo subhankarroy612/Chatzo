@@ -20,15 +20,13 @@ export default function ChatBubble({
 }: any) {
   const timestamp = () => {
     const dateObject = new Date(createdAt);
-    // Get various components of the date and time
     const year = dateObject.getFullYear();
-    const month = dateObject.getMonth() + 1; // Months are zero-based
+    const month = dateObject.getMonth() + 1;
     const day = dateObject.getDate();
     const hours = dateObject.getHours();
     const minutes = dateObject.getMinutes();
     const seconds = dateObject.getSeconds();
 
-    // Format the components into a readable string
     const formattedTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
     return formattedTime;

@@ -29,12 +29,13 @@ io.on("connection", (socket) => {
     socket.join(room);
   });
 
-  socket.on("new_message", ({ sender, content }) => {
-    io.to(sender).emit("new_message", content);
+  socket.on("new_message", async (body: any) => {
+    const channelId = [body.sender, body.receiver].sort().join();
+    io.to(channelId).emit("new_message", { body, channelId });
   });
 
   socket.on("user_disconnected", (user) => {
-    onlineUsers.delete(user.username);
+    onlineUsers.delete(user?.username);
     console.log(onlineUsers);
   });
 });

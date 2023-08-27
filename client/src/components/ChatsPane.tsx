@@ -7,6 +7,7 @@ import List from "@mui/joy/List";
 import ChatListItem from "./ChatListItem";
 import SearchIcon from "@mui/icons-material/Search";
 import jwtDecode from "jwt-decode";
+import { socket } from "../Message";
 
 export default function ChatsPane({ setSelectedChat, selectedChatId }: any) {
   const [text, setText] = React.useState("");
@@ -36,7 +37,9 @@ export default function ChatsPane({ setSelectedChat, selectedChatId }: any) {
           username: contactDetails[0].username,
           email: contactDetails[0].email,
         },
+        channelId: contactDetails[0].channelId,
       });
+      socket.emit("join_room", contactDetails[0].channelId);
     } catch (error) {
       console.log(error);
     }
@@ -59,6 +62,7 @@ export default function ChatsPane({ setSelectedChat, selectedChatId }: any) {
         setText("");
         if (res.status) {
           alert("Contact added successfully");
+          getContacts(userDetails.id);
         } else {
           alert(res.message);
         }
